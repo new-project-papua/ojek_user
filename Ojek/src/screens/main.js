@@ -7,7 +7,7 @@ const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 // const LATITUDE = -6.25692154;
 // const LONGITUDE = 106.78456578;
-const LATITUDE_DELTA = 0.0922;
+const LATITUDE_DELTA = 0.01;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default class Registration extends React.Component {
@@ -29,6 +29,14 @@ export default class Registration extends React.Component {
     console.log(this.state)
     return (
       <View>
+        <TextInput
+          style={ styles.fromTextInput }
+          placeholder='Dari:'
+          underlineColorAndroid='rgba(0,0,0,0)' />
+        <TextInput
+          style={ styles.destinationTextInput }
+          placeholder='Tujuan:'
+          underlineColorAndroid='rgba(0,0,0,0)' />
         <MapView
           loadingEnabled={ true }
           initialRegion={{
@@ -38,7 +46,11 @@ export default class Registration extends React.Component {
             longitudeDelta: LONGITUDE_DELTA
           }}
           style={ styles.mapView }
-        />
+        >
+          <MapView.Marker
+            coordinate={ this.state.position }
+          />
+        </MapView>
       </View>
     )
   }
@@ -67,5 +79,29 @@ const styles = StyleSheet.create({
     // flex: 1,
     width: '100%',
     height: '100%',
+  },
+  fromTextInput: {
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    position: 'absolute',
+    top: 10,
+    left: 5,
+    right: 5,
+    zIndex: 99,
+    borderRadius: 10,
+    height: 40,
+    fontWeight: 'bold',
+    paddingHorizontal: 15,
+  },
+  destinationTextInput: {
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    position: 'absolute',
+    top: 55,
+    left: 5,
+    right: 5,
+    zIndex: 99,
+    borderRadius: 10,
+    height: 40,
+    fontWeight: 'bold',
+    paddingHorizontal: 15,
   }
 })
