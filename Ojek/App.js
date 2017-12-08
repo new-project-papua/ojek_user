@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 
 import Navigator from './navigator/login_register'
+import NavigatorMain from './navigator'
 import Registration from './src/screens/registration'
 import Login from './src/screens/login'
 
@@ -21,7 +22,7 @@ export default class App extends Component<{}> {
 
   showScreen() {
     return (
-      <Navigator/>
+      <NavigatorMain/>
     )
   }
 }

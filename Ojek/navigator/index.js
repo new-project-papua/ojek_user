@@ -9,6 +9,8 @@ const Navigator = StackNavigator({
       title: 'HOME'
     }
   }
-})
+}
+,{ headerMode: 'none' }
+)
 
 export default Navigator
