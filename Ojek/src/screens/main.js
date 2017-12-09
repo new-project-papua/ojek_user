@@ -8,7 +8,7 @@ const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 // const LATITUDE = -6.25692154;
 // const LONGITUDE = 106.78456578;
-const LATITUDE_DELTA = 0.01;
+const LATITUDE_DELTA = 0.05;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default class Registration extends React.Component {
@@ -36,8 +36,61 @@ export default class Registration extends React.Component {
     this.getCurrentPosition()
   }
 
+  componentDidMount() {
+    // this.getAddress(`${this.state.position.latitude},${this.state.position.longitude}`, 2)
+  }
+
   render() {
     console.log(this.state)
+    return (
+      <View>
+
+        { this.showForm() }
+
+        <MapView
+          showsUserLocation = { true }
+          followUserLocation = { true }
+          showsMyLocationButton={ true }
+          loadingEnabled={ true }
+          initialRegion={{
+            latitude: this.state.position.latitude,
+            longitude: this.state.position.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA
+          }}
+          style={ styles.mapView }
+        >
+          { this.showMarker() }
+        </MapView>
+
+      </View>
+    )
+  }
+
+  showMarker() {
+    return (
+      <View>
+        <MapView.Marker
+          coordinate={{
+            latitude: this.state.position.latitude,
+            longitude: this.state.position.longitude
+          }}
+          draggable
+          style={{ zIndex: 2 }}
+        />
+        <MapView.Marker
+          coordinate={{
+            latitude: this.state.position.latitude,
+            longitude: this.state.position.longitude
+          }}
+          draggable
+          pinColor='#5DB7DE'
+        />
+      </View>
+    )
+  }
+
+  showForm() {
     return (
       <View>
 
@@ -55,7 +108,7 @@ export default class Registration extends React.Component {
               // width: 270,
               height: 50,
               padding: 5,
-              zIndex: 99,
+              zIndex: 10,
               position: 'absolute',
               top: 0,
               left: 5,
@@ -74,14 +127,17 @@ export default class Registration extends React.Component {
           }}
           currentLocation={false}
           onPress={(data, details = null) => {
-            this.setState({
-              pickupCoordinate: {
-                latitude:  details.geometry.location.lat,
-                longitude: details.geometry.location.lng,
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA
-              }
-            }), this.getAddress(`${details.geometry.location.lat},${details.geometry.location.lng}`, 1)
+            console.log('INI KELUARAN DARI GOOGLE_PLACES_AUTOCOMPLETE:')
+            console.log(data)
+            console.log(details)
+            // this.setState({
+            //   pickupCoordinate: {
+            //     latitude:  details.geometry.location.lat,
+            //     longitude: details.geometry.location.lng,
+            //     latitudeDelta: LATITUDE_DELTA,
+            //     longitudeDelta: LONGITUDE_DELTA
+            //   }
+            // }), this.getAddress(`${details.geometry.location.lat},${details.geometry.location.lng}`, 1)
           }}
 
           query={{
@@ -105,18 +161,18 @@ export default class Registration extends React.Component {
               // width: 270,
               height: 50,
               padding: 5,
-              zIndex: 299,
               position: 'absolute',
-              top: 40,
+              top: 42,
               left: 5,
               right: 5,
+              zIndex: 20,
             },
             textInput: {
               marginLeft: 0,
               marginRight: 0,
               height: 38,
               color: '#009FB7',
-              fontSize: 12
+              fontSize: 12,
             },
             predefinedPlacesDescription: {
               color: '#1faadb'
@@ -124,6 +180,7 @@ export default class Registration extends React.Component {
           }}
           currentLocation={false}
           onPress={(data, details = null) => {
+            console.log('INI KELUARAN DARI GOOGLE_PLACES_AUTOCOMPLETE:')
             console.log(data)
             console.log(details)
             // this.setState({
@@ -142,20 +199,6 @@ export default class Registration extends React.Component {
           }}
         />
 
-        <MapView
-          loadingEnabled={ true }
-          initialRegion={{
-            latitude: this.state.position.latitude,
-            longitude: this.state.position.longitude,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA
-          }}
-          style={ styles.mapView }
-        >
-          <MapView.Marker
-            coordinate={ this.state.position }
-          />
-        </MapView>
       </View>
     )
   }
@@ -210,7 +253,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     width: '100%',
     height: '100%',
-    zIndex: 0,
+    zIndex: 1,
   },
   fromTextInput: {
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -218,7 +261,7 @@ const styles = StyleSheet.create({
     top: 5,
     left: 5,
     right: 5,
-    zIndex: 99,
+    zIndex: 2,
     borderRadius: 5,
     height: 30,
     fontWeight: 'bold',
@@ -231,7 +274,7 @@ const styles = StyleSheet.create({
     top: 40,
     left: 5,
     right: 5,
-    zIndex: 99,
+    zIndex: 3,
     borderRadius: 5,
     height: 30,
     fontWeight: 'bold',
