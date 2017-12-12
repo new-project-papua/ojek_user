@@ -3,6 +3,7 @@ import { Dimensions, StyleSheet, Text, View, TextInput, TouchableHighlight, Scro
 import axios from 'axios'
 import MapView from 'react-native-maps'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import Polyline from '@mapbox/polyline'
 
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -12,12 +13,12 @@ const LATITUDE_DELTA = 0.05;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default class Registration extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       position: {
-        latitude: -2.52,
-        longitude: 140.74
+        latitude: 0,
+        longitude: 0
       },
       pickupCoordinate: {
         latitude: 0,
@@ -28,7 +29,8 @@ export default class Registration extends React.Component {
         longitude: 0
       },
       pickupAddress: null,
-      destinationAddress: null
+      destinationAddress: null,
+      coords: null
     }
   }
 
@@ -61,10 +63,35 @@ export default class Registration extends React.Component {
           style={ styles.mapView }
         >
           { this.showMarker() }
+          { this.getLine() }
         </MapView>
 
       </View>
     )
+  }
+
+  getLine() {
+      this.getDirections(`${this.state.pickupCoordinate.latitude.toString()}, ${this.state.pickupCoordinate.longitude.toString()}`, `${this.state.destinationCoordinate.latitude.toString()}, ${this.state.destinationCoordinate.longitude.toString()}`)
+  }
+
+  async getDirections(startLoc, destinationLoc) {
+    try {
+        let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${ startLoc }&destination=${ destinationLoc }`)
+        let respJson = await resp.json();
+        let points = Polyline.decode(respJson.routes[0].overview_polyline.points);
+        console.log('ini respJson', respJson);
+        let coords = points.map((point, index) => {
+            return  {
+                latitude : point[0],
+                longitude : point[1]
+            }
+        })
+        this.setState({coords: coords})
+        return coords
+    } catch(error) {
+        console.log('ini error getDirections', error)
+        return error
+    }
   }
 
   showMarker() {
@@ -76,7 +103,14 @@ export default class Registration extends React.Component {
             longitude: this.state.position.longitude
           }}
           draggable
-          style={{ zIndex: 2 }}
+          onDragEnd={(e) => {
+            var coordinate = {
+              latitude: e.nativeEvent.coordinate.latitude,
+              longitude: e.nativeEvent.coordinate.longitude
+            }
+            this.setState({ pickupCoordinate: coordinate})
+            this.getAddress(`${coordinate.latitude},${coordinate.longitude}`, 1)
+          }}
         />
         <MapView.Marker
           coordinate={{
@@ -84,6 +118,14 @@ export default class Registration extends React.Component {
             longitude: this.state.position.longitude
           }}
           draggable
+          onDragEnd={(e) => {
+            var coordinate = {
+              latitude: e.nativeEvent.coordinate.latitude,
+              longitude: e.nativeEvent.coordinate.longitude
+            }
+            this.setState({ destinationCoordinate: coordinate})
+            this.getAddress(`${coordinate.latitude},${coordinate.longitude}`, 2)
+          }}
           pinColor='#5DB7DE'
         />
       </View>
@@ -95,7 +137,7 @@ export default class Registration extends React.Component {
       <View>
 
         <GooglePlacesAutocomplete
-          placeholder={ this.state.pickupAddress == null ? 'Dari' : this.state.pickupAddress }
+          placeholder={ this.state.pickupAddress == null ? 'Dari:' : `${this.state.pickupAddress}` }
           minLength={2}
           autoFocus={false}
           returnKeyType={'default'}
@@ -140,6 +182,15 @@ export default class Registration extends React.Component {
             // }), this.getAddress(`${details.geometry.location.lat},${details.geometry.location.lng}`, 1)
           }}
 
+          onChangeText={() => {
+            console.log('onChangeText di autocomplete jalan...')
+          }}
+          listViewDisplayed={false}
+          renderDescription={(row) => console.log(row)}
+          getDefaultValue={() => {
+            return ''
+          }}
+
           query={{
             key: 'AIzaSyC9qifGjvHcpZ2CvLjBBbQZk58rzA9lj8E',
             language: 'en'
@@ -147,7 +198,7 @@ export default class Registration extends React.Component {
         />
 
         <GooglePlacesAutocomplete
-          placeholder='Tujuan:'
+          placeholder={ this.state.destinationAddress == null ? 'Tujuan:' : `${this.state.destinationAddress}` }
           minLength={2}
           autoFocus={false}
           returnKeyType={'default'}
@@ -210,16 +261,16 @@ export default class Registration extends React.Component {
     		if (json.status !== 'OK') {
     			throw new Error(`Geocode error: ${json.status}`);
     		} else {
-          var newAddress = `${json.results[0].address_components[1].long_name} no. ${json.results[0].address_components[0].long_name} ${json.results[0].address_components[2].long_name}`
+          var newAddress = `${json.results[0].address_components[1].long_name}, ${json.results[0].address_components[0].long_name}, ${json.results[0].address_components[2].long_name}`
+          var formatted_address = json.results[0].formatted_address
 
           if(code === 1){
             this.setState({
-              pickupAddress: newAddress
+              pickupAddress: formatted_address
             })
           } else {
-            // alert(newAddress)
             this.setState({
-              destinationAddress: newAddress
+              destinationAddress: formatted_address
             })
           }
         }
