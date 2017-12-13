@@ -33,7 +33,8 @@ class Main extends React.Component {
       },
       pickupAddress: null,
       destinationAddress: null,
-      coords: null
+      coords: null,
+      distance: null
     }
   }
 
@@ -46,7 +47,6 @@ class Main extends React.Component {
   }
 
   render() {
-    console.log(this.state)
     return (
       <View>
 
@@ -66,12 +66,25 @@ class Main extends React.Component {
           style={ styles.mapView }
         >
           { this.showMarker() }
-          { this.getLine() }
         </MapView>
 
       </View>
     )
-  }
+	}
+
+	getDistance() {
+    if (this.state.pickupCoordinate.latitude != 0 && this.state.pickupCoordinate.longitude != 0 && this.state.destinationCoordinate.latitude != 0 && this.state.destinationCoordinate.longitude != 0) {
+      axios({
+        method: 'get',
+        url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${this.state.pickupCoordinate.latitude},${this.state.pickupCoordinate.longitude}&destinations=${this.state.destinationCoordinate.latitude},${this.state.destinationCoordinate.longitude}&mode=car&key=AIzaSyC9qifGjvHcpZ2CvLjBBbQZk58rzA9lj8E`
+      })
+      .then(response => {
+        this.setState({distance: response.data.rows[0].elements[0].distance})
+        console.log(this.state.distance)
+      })
+      .catch(err => console.log(err))
+    }
+	}
 
   getLine() {
       this.getDirections(`${this.state.pickupCoordinate.latitude.toString()}, ${this.state.pickupCoordinate.longitude.toString()}`, `${this.state.destinationCoordinate.latitude.toString()}, ${this.state.destinationCoordinate.longitude.toString()}`)
@@ -113,6 +126,7 @@ class Main extends React.Component {
             }
             this.setState({ pickupCoordinate: coordinate})
             this.getAddress(`${coordinate.latitude},${coordinate.longitude}`, 1)
+            this.getDistance()
           }}
         />
         <MapView.Marker
@@ -128,6 +142,7 @@ class Main extends React.Component {
             }
             this.setState({ destinationCoordinate: coordinate})
             this.getAddress(`${coordinate.latitude},${coordinate.longitude}`, 2)
+            this.getDistance()
           }}
           pinColor='#5DB7DE'
         />

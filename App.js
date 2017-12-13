@@ -5,7 +5,9 @@ import {
   View,
   AsyncStorage
 } from 'react-native';
+import { Provider } from 'react-redux'
 
+import store from './store/store'
 import Navigator from './navigator/login_register'
 import NavigatorMain from './navigator'
 import Registration from './src/screens/registration'
@@ -14,9 +16,11 @@ import Login from './src/screens/login'
 export default class App extends Component<{}> {
   render() {
     return (
-      <View style={styles.container}>
-        { this.showScreen() }
-      </View>
+      <Provider store={store}>
+        <View style={styles.container}>
+          { this.showScreen() }
+        </View>
+      </Provider>
     );
   }
 
