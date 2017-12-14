@@ -74,6 +74,13 @@ class Main extends React.Component {
       <View style={ styles.distancePriceResult }>
         <Text style={{ fontSize: 22, fontWeight: 'bold' }}>Rp10.000</Text>
         <Text>3.4 km</Text>
+        <View style={ styles.buttonWrapper }>
+          <TouchableHighlight
+            style={ styles.bookButton }
+            onPress={ () => alert('button order jalan...') }>
+            <Text style={ styles.bookText }>OK</Text>
+          </TouchableHighlight>
+        </View>
       </View>
     )
   }
@@ -368,6 +375,26 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     margin: 5,
+  },
+  bookButton: {
+    backgroundColor: '#F6F930',
+    width: '100%',
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  bookText: {
+    color: 'gray',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  buttonWrapper: {
+    position: 'absolute',
+    right: 0,
+    alignItems: 'center',
+    width: 100,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   }
 })
 
