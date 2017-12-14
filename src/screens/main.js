@@ -49,9 +49,8 @@ class Main extends React.Component {
   render() {
     return (
       <View>
-
+        { this.showDistancePrice() }
         { this.showForm() }
-
         <MapView
           showsUserLocation = { true }
           followUserLocation = { true }
@@ -63,14 +62,21 @@ class Main extends React.Component {
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA
           }}
-          style={ styles.mapView }
-        >
+          style={ styles.mapView }>
           { this.showMarker() }
         </MapView>
-
       </View>
     )
 	}
+
+  showDistancePrice() {
+    return (
+      <View style={ styles.distancePriceResult }>
+        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>Rp10.000</Text>
+        <Text>3.4 km</Text>
+      </View>
+    )
+  }
 
 	getDistance() {
     if (this.state.pickupCoordinate.latitude != 0 && this.state.pickupCoordinate.longitude != 0 && this.state.destinationCoordinate.latitude != 0 && this.state.destinationCoordinate.longitude != 0) {
@@ -168,7 +174,7 @@ class Main extends React.Component {
               // width: 270,
               height: 50,
               padding: 5,
-              zIndex: 10,
+              zIndex: 2,
               position: 'absolute',
               top: 0,
               left: 5,
@@ -234,7 +240,7 @@ class Main extends React.Component {
               top: 42,
               left: 5,
               right: 5,
-              zIndex: 20,
+              zIndex: 3,
             },
             textInput: {
               marginLeft: 0,
@@ -330,7 +336,7 @@ const styles = StyleSheet.create({
     top: 5,
     left: 5,
     right: 5,
-    zIndex: 2,
+    zIndex: 4,
     borderRadius: 5,
     height: 30,
     fontWeight: 'bold',
@@ -343,12 +349,25 @@ const styles = StyleSheet.create({
     top: 40,
     left: 5,
     right: 5,
-    zIndex: 3,
+    zIndex: 5,
     borderRadius: 5,
     height: 30,
     fontWeight: 'bold',
     paddingVertical: 0,
     paddingHorizontal: 15,
+  },
+  distancePriceResult: {
+    backgroundColor: '#fff',
+    position: 'absolute',
+    bottom: 5,
+    left: 5,
+    right: 5,
+    zIndex: 6,
+    borderRadius: 5,
+    height: 60,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    margin: 5,
   }
 })
 

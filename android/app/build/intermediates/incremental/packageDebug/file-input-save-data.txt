@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Wed Dec 13 12:23:40 WIT 2017
+#Thu Dec 14 08:14:56 WIT 2017
 210.set=ANDROID_RESOURCE
 282.file=/home/anto/new_project/ojek_user/android/app/build/intermediates/res/resources-debug.ap_/res/drawable/abc_cab_background_internal_bg.xml
 14.set=ANDROID_RESOURCE
